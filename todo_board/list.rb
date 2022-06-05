@@ -1,7 +1,7 @@
 require_relative "item"
 
 class List
-    SPACER = '------------------------------------------'
+    SPACER = '-------------------------------------------------'
 
     def initialize(label)
         @label = label
@@ -42,10 +42,11 @@ class List
         puts SPACER
         puts '                ' + @label.upcase
         puts SPACER
-        puts 'Index | Item                 | Deadline'
+        puts 'Index | Item                 | Deadline   | Done'
         puts SPACER
         @items.each_with_index do |item, i|
-            puts "#{i.to_s.ljust(6)}| #{item.title.ljust(21)}| #{item.deadline}"
+            item.done ? check = "✓" : check = " "
+            puts "#{i.to_s.ljust(6)}| #{item.title.ljust(21)}| #{item.deadline} | [#{check}]"
         end
         puts SPACER
     end
@@ -53,7 +54,8 @@ class List
     def print_full_item(index)
         return unless valid_index?(index)
         puts SPACER
-        puts @items[index].title.ljust(32) + @items[index].deadline
+        @items[index].done ? check = "✓" : check = " "
+        puts "#{@items[index].title.ljust(32)}#{@items[index].deadline.ljust(14)}[#{check}]"
         puts @items[index].description
         puts SPACER
     end
@@ -84,5 +86,19 @@ class List
 
     def sort_by_date!
         @items.sort_by!(&:deadline)
+    end
+
+    def toggle_item(index)
+        @items[index].toggle
+    end
+
+    def remove_item(index)
+        return false unless valid_index?(index)
+        @items.delete_at(index)
+        true
+    end
+
+    def purge
+        @items.select(&:done).each { |item| @items.delete(item) }
     end
 end

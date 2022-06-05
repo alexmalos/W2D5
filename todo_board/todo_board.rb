@@ -1,29 +1,41 @@
 require_relative "list"
 
 class TodoBoard
-    def initialize(label)
-        @list = List.new(label)
+    def initialize
+        @board = {}
     end
 
     def get_command
         print "\nEnter a command: "
-        cmd, *args  = gets.chomp.split
+        cmd, label, *args  = gets.chomp.split
         
         case cmd
+        when 'mklist'
+            @board[label] = List.new(label)
+        when 'ls'
+            @board.each_key { |key| puts " #{key}" }
+        when 'showall'
+            @board.each_value(&:print)
         when 'mktodo'
-            @list.add_item(*args)
+            @board[label].add_item(*args)
+        when 'toggle'
+            @board[label].toggle_item(*args.map(&:to_i))
+        when 'rm'
+            @board[label].remove_item(*args.map(&:to_i))
+        when 'purge'
+            @board[label].purge
         when 'up'
-            @list.up(*args.map(&:to_i))
+            @board[label].up(*args.map(&:to_i))
         when 'down'
-            @list.down(*args.map(&:to_i))
+            @board[label].down(*args.map(&:to_i))
         when 'swap'
-            @list.swap(*args.map(&:to_i))
+            @board[label].swap(*args.map(&:to_i))
         when 'sort'
-            @list.sort_by_date!(*args)
+            @board[label].sort_by_date!
         when 'priority'
-            @list.print_priority(*args)
+            @board[label].print_priority
         when 'print'
-            args.empty? ? @list.print(*args) : @list.print_full_item(*args.map(&:to_i))
+            args.empty? ? @board[label].print : @board[label].print_full_item(*args.map(&:to_i))
         when 'quit'
             return false
         else
@@ -35,8 +47,8 @@ class TodoBoard
 
     def run
         running = true
-        while running
-            running = get_command
-        end
+        running = get_command while running
     end
 end
+
+TodoBoard.new.run

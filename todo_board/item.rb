@@ -13,14 +13,18 @@ class Item
         @title = title
         @deadline = deadline
         @description = description
+        @done = false
     end
     
     attr_accessor :title, :description
-    attr_reader :deadline
+    attr_reader :deadline, :done
 
     def deadline=(new_deadline)
         raise ArgumentError.new "Invalid deadline" unless Item.valid_date?(new_deadline)
         @deadline = new_deadline
     end
     
+    def toggle
+        @done = !@done
+    end
 end
